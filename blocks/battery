@@ -1,0 +1,40 @@
+#!/usr/bin/sh
+
+bat=`[ -z $1 ] && cat /sys/class/power_supply/BAT1/capacity | awk '{print $1}' || echo $1`;
+batstatus=`cat /sys/class/power_supply/BAT1/status`
+
+#calculating amount of green
+green=`
+    number=\`echo "obase=16; $(( $((bat)) * 255 / 100 ))" | bc \`;
+    [ ${#number} -eq 1 ] && echo "0$number" || echo $number`; #adding '0' if hex number has one digit
+
+#calculating amount of red
+red=`
+    number=\`echo "obase=16; $(( 255 - ( $((bat)) * 255 / 100 )))" | bc \`;
+    [ ${#number} -eq 1 ] && echo "0$number" || echo $number`; #adding '0' if hex number has one digit
+
+
+batcolor="${red}${green}00"
+unfill=$((11 - (11 * $((bat)) / 100))) #how much battery is empty
+
+#creating battery icon
+baticon="$bat^c#${batcolor}^^r3,0,4,2^^r0,2,10,15^^c#000000^^r1,3,8,11^^c#${red}${green}00^^r2,4,6,9^^c#000000^^r1,3,8,${unfill}^"
+
+case $batstatus in
+    Discharging)
+        ;;
+    *)
+        #46-63 zmiana
+        color=$(($bat - 46))
+        [ $color -lt 0 ] && color=0
+        [ $color -gt 17 ] && color=17
+        red=`echo "ibase=16; $red" | bc`
+        green=`echo "ibase=16; $green" | bc`
+        colorred=$(($((color)) - $(($((color)) * $((red)) / 100))))
+        [ $bat -lt 50 ] && color=${batcolor} || color="000000"
+        pluggedicon="^c#${color}^^r5,4,3,1^^r4,5,3,1^^r3,6,3,1^^r2,7,3,1^^r2,8,6,1^^r5,9,3,1^^r4,10,3,1^^r3,11,3,1^^r2,12,3,1^"
+        ;;
+esac
+#715ad0
+
+echo "${baticon}${pluggedicon}^d^^f10^"

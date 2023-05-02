@@ -1,0 +1,14 @@
+//Modify this file to change what commands output to your statusbar, and recompile using the make command.
+static const Block blocks[] = {
+	/*Icon*/	/*Command*/		/*Update Interval*/	/*Update Signal*/
+    {"", "sto=`df -h '/home' | tail -1 | awk '{print $3 \"/\" $2}'`; echo \"$sto^c#FFFF00^^d^\"", 10, 0},
+    {"", "gpu=`nvidia-smi | grep '%' | awk '{print $13}'`; echo \"$gpu^c#0Faa0F^^d^\"", 10, 0},
+    {"", "cpu=`top -bn1 | grep Cpu | awk '{print $2\"%\"}'`; echo \"$cpu^c#663399^^d^\"", 10, 0},
+	{"", "ram=`free -h | awk '/^Mem/ { print $3\"/\"$2 }' | sed s/i//g`; echo \"$ram^c#09aa09^^r4,0,5,19^^r0,0,3,1^^r0,2,3,1^^r0,4,3,1^^r0,6,3,1^^r0,8,3,1^^r0,10,3,1^^r0,12,3,1^^r0,14,3,1^^r0,16,3,1^^r0,18,3,1^^d^^f9^\"",	10,		0},
+    {"", "bat=`cat /sys/class/power_supply/BAT1/capacity | awk '{print $1}'`; echo \"$bat^c#00FF00^^r3,0,4,2^^r0,2,10,15^^c#000000^^r1,3,8,$((13 - (13 * $bat / 100)))^^d^^f10^\"", 20, 0},
+	{"| ", "date '+%d %b %gr (%a) %H:%M:%S'",					1,		0},
+};
+
+//sets delimeter between status commands. NULL character ('\0') means no delimeter.
+static char delim[] = " ";
+static unsigned int delimLen = 5;

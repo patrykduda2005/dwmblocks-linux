@@ -19,8 +19,9 @@ options:
 dwmblocks: dwmblocks.c blocks.def.h blocks.h
 	${CC} -o dwmblocks dwmblocks.c ${CFLAGS} ${LDFLAGS}
 
+SCRIPTS = $(abspath blocks)
 blocks.h:
-	cp blocks.def.h $@
+	sed 's=<path to the folder containing scripts>=${SCRIPTS}=' blocks.def.h > $@
 
 clean:
 	rm -f *.o *.gch dwmblocks
